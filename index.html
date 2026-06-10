@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RapidResQ — Instant Detection. Immediate Action.</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet"/>
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<!-- ========== EMERGENCY MODE OVERLAY ========== -->
+<div class="emergency-overlay" id="emergencyOverlay">
+  <div class="em-scanline"></div>
+  <div class="em-content">
+    <div class="em-icon">🚨</div>
+    <h1 class="em-title">EMERGENCY MODE</h1>
+    <p class="em-sub">ACTIVATED — ALL UNITS ALERTED</p>
+    <div class="em-bars">
+      <div class="em-bar"></div><div class="em-bar"></div><div class="em-bar"></div>
+      <div class="em-bar"></div><div class="em-bar"></div><div class="em-bar"></div>
+      <div class="em-bar"></div><div class="em-bar"></div>
+    </div>
+    <button class="em-dismiss" id="emDismiss">DISMISS & CONTINUE →</button>
+  </div>
+</div>
+
+<!-- ========== EMERGENCY ALERT BANNER ========== -->
+<div class="emergency-banner" id="emergencyBanner">
+  <span class="eb-dot"></span>
+  <span class="eb-text">🚨 EMERGENCY MODE ACTIVE — All units on standby — System at maximum readiness</span>
+  <span class="eb-text">🚨 EMERGENCY MODE ACTIVE — All units on standby — System at maximum readiness</span>
+  <button class="eb-close" id="ebClose">✕</button>
+</div>
+
+<!-- ========== EMERGENCY MODAL ========== -->
+<div class="emergency-modal-bg" id="emergencyModalBg">
+  <div class="emergency-modal" id="emergencyModal">
+    <div class="em-modal-header">
+      <span class="em-modal-title"><i class="fa-solid fa-triangle-exclamation"></i> EMERGENCY CONTROL PANEL</span>
+      <button class="em-modal-close" id="emModalClose">✕</button>
+    </div>
+
+    <div class="em-modal-body">
+
+      <!-- Status -->
+      <div class="em-modal-status">
+        <div class="em-status-dot"></div>
+        <span>EMERGENCY MODE ACTIVE</span>
+        <span class="em-status-time" id="emTimer">00:00</span>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="em-modal-section-title">⚡ QUICK ACTIONS</div>
+      <div class="em-quick-actions">
+        <button class="em-action-btn" onclick="callService('Ambulance')">
+          <span>🚑</span><span>Call Ambulance</span>
+        </button>
+        <button class="em-action-btn" onclick="callService('Police')">
+          <span>🚔</span><span>Call Police</span>
+        </button>
+        <button class="em-action-btn" onclick="callService('Fire Brigade')">
+          <span>🚒</span><span>Fire Brigade</span>
+        </button>
+        <button class="em-action-btn em-action-sim" onclick="triggerEmSim()">
+          <span>⚡</span><span>Auto Simulate</span>
+        </button>
+      </div>
+
+      <!-- Emergency Contacts -->
+      <div class="em-modal-section-title">📱 EMERGENCY CONTACTS</div>
+      <div class="em-contacts">
+        <div class="em-contact-row">
+          <div class="em-contact-info">
+            <span class="em-contact-name">Rahul Kumar</span>
+            <span class="em-contact-rel">Primary Contact</span>
+          </div>
+          <button class="em-call-btn" onclick="callService('Rahul Kumar')">📞 ALERT</button>
+        </div>
+        <div class="em-contact-row">
+          <div class="em-contact-info">
+            <span class="em-contact-name">Priya Sharma</span>
+            <span class="em-contact-rel">Secondary Contact</span>
+          </div>
+          <button class="em-call-btn" onclick="callService('Priya Sharma')">📞 ALERT</button>
+        </div>
+        <div class="em-contact-row">
+          <div class="em-contact-info">
+            <span class="em-contact-name">City General Hospital</span>
+            <span class="em-contact-rel">Nearest Hospital — 2.1 km</span>
+          </div>
+          <button class="em-call-btn" onclick="callService('City General Hospital')">📞 ALERT</button>
+        </div>
+      </div>
+
+      <!-- System Status -->
+      <div class="em-modal-section-title">🛰 SYSTEM STATUS</div>
+      <div class="em-sys-status">
+        <div class="em-sys-row"><span>GPS Signal</span><span class="sys-ok">● STRONG</span></div>
+        <div class="em-sys-row"><span>Network</span><span class="sys-ok">● ONLINE</span></div>
+        <div class="em-sys-row"><span>Sensor Array</span><span class="sys-ok">● ACTIVE</span></div>
+        <div class="em-sys-row"><span>Alert System</span><span class="sys-ok">● READY</span></div>
+      </div>
+
+    </div>
+
+    <button class="em-deactivate" id="emDeactivate">⛔ DEACTIVATE EMERGENCY MODE</button>
+  </div>
+</div>
+
+<!-- ========== TOAST NOTIFICATION ========== -->
+<div class="em-toast" id="emToast"></div>
+
+
+  <!-- ========== NAVBAR ========== -->
+  <nav id="navbar">
+    <div class="nav-logo">
+      <span class="logo-icon">⬡</span>
+      <span class="logo-text">Rapid<span class="accent">ResQ</span></span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#simulation">Simulation</a></li>
+      <li><a href="#dashboard">Dashboard</a></li>
+      <li><a href="#analytics">Analytics</a></li>
+    </ul>
+    <button class="nav-emergency-btn">🚨 Emergency Mode</button>
+  </nav>
+
+<!-- ========== HERO SECTION ========== -->
+<section id="home">
+
+  <!-- Background Effects -->
+  <div class="hero-bg">
+    <div class="radar-ring r1"></div>
+    <div class="radar-ring r2"></div>
+    <div class="radar-ring r3"></div>
+    <div class="scan-line"></div>
+    <div class="grid-overlay"></div>
+  </div>
+
+  <!-- Left Content -->
+  <div class="hero-left">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      SYSTEM ACTIVE — MONITORING 24/7
+    </div>
+
+    <h1 class="hero-title">
+      INSTANT<br/>
+      <span class="title-red">DETECTION.</span><br/>
+      IMMEDIATE<br/>
+      <span class="title-cyan">ACTION.</span>
+    </h1>
+
+    <p class="hero-sub">
+      RapidResQ is an intelligent accident detection and emergency
+      coordination platform designed to save lives through rapid
+      automated response.
+    </p>
+
+
+    <div class="hero-buttons">
+      <button class="btn-primary" onclick="document.getElementById('simulation').scrollIntoView({behavior:'smooth'})">
+        <span class="btn-icon">⚡</span> Simulate Accident
+      </button>
+      <button class="btn-secondary" onclick="document.getElementById('dashboard').scrollIntoView({behavior:'smooth'})">
+        Explore Dashboard <span>→</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Right Visual Panel -->
+  <div class="hero-right">
+
+    <!-- Central GPS Pulse -->
+    <div class="gps-core">
+      <div class="gps-pulse p1"></div>
+      <div class="gps-pulse p2"></div>
+      <div class="gps-pulse p3"></div>
+      <div class="gps-dot">
+        <i class="fa-solid fa-location-dot"></i>
+      </div>
+    </div>
+
+    <!-- Floating Alert Cards -->
+    <div class="alert-card card-ambulance">
+      <span class="card-icon">🚑</span>
+      <div class="card-info">
+        <span class="card-title">Ambulance Dispatched</span>
+        <span class="card-detail">ETA: 4 mins — Route optimized</span>
+      </div>
+      <span class="card-status status-green">LIVE</span>
+    </div>
+
+    <div class="alert-card card-hospital">
+      <span class="card-icon">🏥</span>
+      <div class="card-info">
+        <span class="card-title">Hospital Notified</span>
+        <span class="card-detail">City General — 2.1 km away</span>
+      </div>
+      <span class="card-status status-cyan">READY</span>
+    </div>
+
+    <div class="alert-card card-police">
+      <span class="card-icon">🚔</span>
+      <div class="card-info">
+        <span class="card-title">Police Alerted</span>
+        <span class="card-detail">Unit #14 — En route</span>
+      </div>
+      <span class="card-status status-orange">MOVING</span>
+    </div>
+
+    <div class="alert-card card-family">
+      <span class="card-icon">📱</span>
+      <div class="card-info">
+        <span class="card-title">Family Notified</span>
+        <span class="card-detail">2 contacts alerted</span>
+      </div>
+      <span class="card-status status-green">SENT</span>
+    </div>
+
+    <!-- Heartbeat Line -->
+    <div class="heartbeat-wrap">
+      <svg class="heartbeat-svg" viewBox="0 0 300 60" preserveAspectRatio="none">
+        <polyline class="heartbeat-line"
+          points="0,30 40,30 55,10 65,50 75,20 85,40 95,30 140,30 155,8 165,52 175,18 185,42 195,30 300,30"/>
+      </svg>
+    </div>
+
+    <!-- Severity Meter -->
+    <div class="severity-panel">
+      <span class="severity-label">IMPACT SEVERITY</span>
+      <div class="severity-bar-bg">
+        <div class="severity-bar-fill"></div>
+      </div>
+      <span class="severity-value">CRITICAL</span>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ========== HOW IT WORKS ========== -->
+<section id="how-it-works">
+
+  <div class="section-header">
+    <p class="section-label">// SYSTEM WORKFLOW</p>
+    <h2 class="section-title">HOW <span class="highlight-red">RAPIDRESQ</span> WORKS</h2>
+    <p class="section-desc">
+      From crash detection to rescue coordination — every step is automated,
+      instant, and intelligent.
+    </p>
+  </div>
+
+  <div class="workflow-container">
+
+    <div class="workflow-line">
+      <div class="workflow-line-fill"></div>
+    </div>
+
+    <div class="workflow-step" data-step="1">
+      <div class="step-left">
+        <div class="step-icon-wrap icon-red">
+          <i class="fa-solid fa-car-burst"></i>
+        </div>
+      </div>
+      <div class="step-center"><div class="step-node"></div></div>
+      <div class="step-right-content">
+        <div class="step-card">
+          <span class="step-number">01</span>
+          <h3 class="step-title">Accident Detected</h3>
+          <p class="step-desc">Vehicle sensors and AI systems detect sudden impact, rapid deceleration, or collision force in milliseconds.</p>
+          <div class="step-tag"><i class="fa-solid fa-microchip"></i> IMPACT SENSOR</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="workflow-step" data-step="2">
+      <div class="step-left">
+        <div class="step-icon-wrap icon-cyan">
+          <i class="fa-solid fa-location-crosshairs"></i>
+        </div>
+      </div>
+      <div class="step-center"><div class="step-node"></div></div>
+      <div class="step-right-content">
+        <div class="step-card">
+          <span class="step-number">02</span>
+          <h3 class="step-title">GPS Location Captured</h3>
+          <p class="step-desc">The exact accident coordinates are pinpointed instantly and locked for emergency dispatch teams.</p>
+          <div class="step-tag"><i class="fa-solid fa-satellite"></i> GPS SYNC</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="workflow-step" data-step="3">
+      <div class="step-left">
+        <div class="step-icon-wrap icon-orange">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+      </div>
+      <div class="step-center"><div class="step-node"></div></div>
+      <div class="step-right-content">
+        <div class="step-card">
+          <span class="step-number">03</span>
+          <h3 class="step-title">Severity Analysis</h3>
+          <p class="step-desc">AI engine predicts injury severity, fire risk, fuel leakage probability, and passenger condition instantly.</p>
+          <div class="step-tag"><i class="fa-solid fa-brain"></i> AI ENGINE</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="workflow-step" data-step="4">
+      <div class="step-left">
+        <div class="step-icon-wrap icon-red">
+          <i class="fa-solid fa-truck-medical"></i>
+        </div>
+      </div>
+      <div class="step-center"><div class="step-node"></div></div>
+      <div class="step-right-content">
+        <div class="step-card">
+          <span class="step-number">04</span>
+          <h3 class="step-title">Emergency Services Alerted</h3>
+          <p class="step-desc">Nearby hospitals, ambulances, fire stations, and police units are automatically notified and dispatched.</p>
+          <div class="step-tag"><i class="fa-solid fa-bell"></i> AUTO DISPATCH</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="workflow-step" data-step="5">
+      <div class="step-left">
+        <div class="step-icon-wrap icon-cyan">
+          <i class="fa-solid fa-mobile-screen"></i>
+        </div>
+      </div>
+      <div class="step-center"><div class="step-node"></div></div>
+      <div class="step-right-content">
+        <div class="step-card">
+          <span class="step-number">05</span>
+          <h3 class="step-title">Family Notification</h3>
+          <p class="step-desc">Emergency contacts receive live alerts, accident location, hospital destination, and real-time status updates.</p>
+          <div class="step-tag"><i class="fa-solid fa-paper-plane"></i> LIVE ALERT</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="workflow-step" data-step="6">
+      <div class="step-left">
+        <div class="step-icon-wrap icon-cyan">
+          <i class="fa-solid fa-satellite-dish"></i>
+        </div>
+      </div>
+      <div class="step-center"><div class="step-node"></div></div>
+      <div class="step-right-content">
+        <div class="step-card">
+          <span class="step-number">06</span>
+          <h3 class="step-title">Rescue Tracking Activated</h3>
+          <p class="step-desc">Full real-time coordination begins — ambulance routes, hospital prep, and rescue team monitoring go live.</p>
+          <div class="step-tag"><i class="fa-solid fa-satellite-dish"></i> TRACKING LIVE</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+  <!-- ========== SIMULATION ========== -->
+<section id="simulation">
+  <div class="section-header">
+    <p class="section-label">// LIVE SIMULATION</p>
+    <h2 class="section-title">ACCIDENT <span class="highlight-red">SIMULATION</span> CENTER</h2>
+    <p class="section-desc">Configure parameters and trigger a live emergency response simulation.</p>
+  </div>
+
+  <div class="sim-layout">
+
+    <!-- LEFT — Controls -->
+    <div class="sim-controls">
+      <div class="sim-panel-title">
+        <i class="fa-solid fa-sliders"></i> SIMULATION PARAMETERS
+      </div>
+
+      <div class="control-group">
+        <label class="control-label">Vehicle Speed</label>
+        <input type="range" class="sim-slider" id="speedSlider" min="0" max="200" value="120"/>
+        <div class="slider-value"><span id="speedVal">120</span> km/h</div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label">Impact Intensity</label>
+        <input type="range" class="sim-slider" id="impactSlider" min="0" max="100" value="75"/>
+        <div class="slider-value"><span id="impactVal">75</span>%</div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label">Passengers</label>
+        <input type="range" class="sim-slider" id="passSlider" min="1" max="6" value="2"/>
+        <div class="slider-value"><span id="passVal">2</span> persons</div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label">Weather Condition</label>
+        <div class="option-buttons" id="weatherOpts">
+          <button class="opt-btn active" data-val="Clear">☀️ Clear</button>
+          <button class="opt-btn" data-val="Rain">🌧️ Rain</button>
+          <button class="opt-btn" data-val="Fog">🌫️ Fog</button>
+          <button class="opt-btn" data-val="Night">🌙 Night</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label">Road Type</label>
+        <div class="option-buttons" id="roadOpts">
+          <button class="opt-btn active" data-val="Highway">Highway</button>
+          <button class="opt-btn" data-val="City">City Road</button>
+          <button class="opt-btn" data-val="Rural">Rural</button>
+        </div>
+      </div>
+
+      <div class="severity-preview">
+        <span class="control-label">Predicted Severity</span>
+        <div class="sev-bar-bg">
+          <div class="sev-bar-fill" id="sevFill"></div>
+        </div>
+        <span class="sev-label" id="sevLabel">CRITICAL</span>
+      </div>
+
+      <button class="simulate-btn" id="simBtn">
+        <span class="sim-btn-icon">🚨</span>
+        <span class="sim-btn-text">SIMULATE ACCIDENT</span>
+      </button>
+
+      <button class="reset-btn" id="resetBtn">↺ RESET SIMULATION</button>
+    </div>
+
+    <!-- CENTER — Map -->
+    <div class="sim-map-wrap">
+      <div class="map-header">
+        <span class="map-title"><i class="fa-solid fa-map-location-dot"></i> LIVE EMERGENCY MAP</span>
+        <span class="map-status" id="mapStatus">STANDBY</span>
+      </div>
+
+      <div class="sim-map" id="simMap">
+        <div class="map-grid"></div>
+        <div class="map-road road-h"></div>
+        <div class="map-road road-v"></div>
+
+        <div class="map-accident" id="mapAccident">
+          <div class="accident-ring r1"></div>
+          <div class="accident-ring r2"></div>
+          <div class="accident-dot">💥</div>
+        </div>
+
+        <div class="map-marker marker-hospital" id="markerHospital">
+          <div class="marker-icon">🏥</div>
+          <div class="marker-label">City Hospital</div>
+        </div>
+
+        <div class="map-marker marker-ambulance" id="markerAmbulance">
+          <div class="marker-icon">🚑</div>
+          <div class="marker-label">Ambulance</div>
+        </div>
+
+        <div class="map-marker marker-police" id="markerPolice">
+          <div class="marker-icon">🚔</div>
+          <div class="marker-label">Police Unit</div>
+        </div>
+
+        <div class="map-marker marker-fire" id="markerFire">
+          <div class="marker-icon">🚒</div>
+          <div class="marker-label">Fire Station</div>
+        </div>
+
+        <svg class="route-svg" id="routeSvg" viewBox="0 0 500 400">
+          <path id="routeAmbulance" class="route-path route-cyan" d=""/>
+          <path id="routePolice" class="route-path route-orange" d=""/>
+          <path id="routeFire" class="route-path route-red" d=""/>
+        </svg>
+
+        <div class="response-radius" id="responseRadius"></div>
+
+        <div class="map-overlay" id="mapOverlay">
+          <i class="fa-solid fa-satellite-dish"></i>
+          <span>Configure parameters and trigger simulation</span>
+        </div>
+      </div>
+
+      <!-- Golden Hour Timer -->
+      <div class="golden-timer" id="goldenTimer">
+        <span class="timer-label">⏱ GOLDEN HOUR</span>
+        <span class="timer-value" id="timerVal">60:00</span>
+        <span class="timer-sub">Critical response window</span>
+      </div>
+    </div>
+
+    <!-- RIGHT — Logs -->
+    <div class="sim-logs-wrap">
+      <div class="sim-panel-title">
+        <i class="fa-solid fa-terminal"></i> EMERGENCY ACTIVITY LOG
+      </div>
+
+      <div class="sim-logs" id="simLogs">
+        <div class="log-idle">
+          <i class="fa-solid fa-circle-dot"></i>
+          System ready. Awaiting simulation trigger...
+        </div>
+      </div>
+
+      <!-- Emergency Contacts Popup -->
+      <div class="notify-popup" id="notifyPopup">
+        <div class="popup-header">📱 FAMILY NOTIFIED</div>
+        <div class="popup-contact">
+          <span class="contact-name">Rahul Kumar</span>
+          <span class="contact-tag sent">SMS SENT ✓</span>
+        </div>
+        <div class="popup-contact">
+          <span class="contact-name">Priya Sharma</span>
+          <span class="contact-tag sent">SMS SENT ✓</span>
+        </div>
+        <div class="popup-msg">
+          "Emergency detected at MG Road. Ambulance dispatched. Hospital: City General"
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+ <div class="section-header">
+  <p class="section-label">// COMMAND CENTER</p>
+  <h2 class="section-title">LIVE <span class="highlight-cyan">DASHBOARD</span></h2>
+  <p class="section-desc">Real-time monitoring of all active incidents and emergency units.</p>
+</div>
+
+<!-- Top Stats Row -->
+<div class="dash-stats-row">
+  <div class="dash-stat-card">
+    <div class="dash-stat-icon icon-red"><i class="fa-solid fa-circle-exclamation"></i></div>
+    <div class="dash-stat-info">
+      <span class="dash-stat-num" id="activeIncidents">3</span>
+      <span class="dash-stat-label">Active Incidents</span>
+    </div>
+    <div class="dash-stat-badge badge-red">LIVE</div>
+  </div>
+  <div class="dash-stat-card">
+    <div class="dash-stat-icon icon-cyan"><i class="fa-solid fa-truck-medical"></i></div>
+    <div class="dash-stat-info">
+      <span class="dash-stat-num" id="unitsDeployed">7</span>
+      <span class="dash-stat-label">Units Deployed</span>
+    </div>
+    <div class="dash-stat-badge badge-cyan">ACTIVE</div>
+  </div>
+  <div class="dash-stat-card">
+    <div class="dash-stat-icon icon-orange"><i class="fa-solid fa-clock"></i></div>
+    <div class="dash-stat-info">
+      <span class="dash-stat-num">4.2<span style="font-size:1rem">min</span></span>
+      <span class="dash-stat-label">Avg Response Time</span>
+    </div>
+    <div class="dash-stat-badge badge-orange">TODAY</div>
+  </div>
+  <div class="dash-stat-card">
+    <div class="dash-stat-icon icon-green"><i class="fa-solid fa-circle-check"></i></div>
+    <div class="dash-stat-info">
+      <span class="dash-stat-num" id="resolvedToday">18</span>
+      <span class="dash-stat-label">Resolved Today</span>
+    </div>
+    <div class="dash-stat-badge badge-green">+3</div>
+  </div>
+</div>
+
+<!-- Main Dashboard Grid -->
+<div class="dash-main-grid">
+
+  <!-- LEFT — Live Incident Cards -->
+  <div class="dash-col">
+    <div class="dash-panel-title">
+      <i class="fa-solid fa-circle-exclamation"></i> ACTIVE INCIDENTS
+      <span class="live-dot-wrap"><span class="live-dot"></span> LIVE</span>
+    </div>
+
+    <div class="incident-list" id="incidentList">
+
+      <div class="incident-card severity-critical">
+        <div class="inc-top">
+          <span class="inc-id">#INC-2041</span>
+          <span class="inc-severity sev-critical">CRITICAL</span>
+          <span class="inc-time">2 min ago</span>
+        </div>
+        <div class="inc-location"><i class="fa-solid fa-location-dot"></i> MG Road, Sector 4 — Head-on collision</div>
+        <div class="inc-units">
+          <span class="unit-tag tag-ambulance">🚑 A12</span>
+          <span class="unit-tag tag-police">🚔 P07</span>
+          <span class="unit-tag tag-fire">🚒 F03</span>
+        </div>
+        <div class="inc-bar-bg"><div class="inc-bar-fill" style="width:85%"></div></div>
+      </div>
+
+      <div class="incident-card severity-severe">
+        <div class="inc-top">
+          <span class="inc-id">#INC-2040</span>
+          <span class="inc-severity sev-severe">SEVERE</span>
+          <span class="inc-time">11 min ago</span>
+        </div>
+        <div class="inc-location"><i class="fa-solid fa-location-dot"></i> NH-48 Bypass — Vehicle rollover</div>
+        <div class="inc-units">
+          <span class="unit-tag tag-ambulance">🚑 A08</span>
+          <span class="unit-tag tag-police">🚔 P02</span>
+        </div>
+        <div class="inc-bar-bg"><div class="inc-bar-fill" style="width:60%"></div></div>
+      </div>
+
+      <div class="incident-card severity-moderate">
+        <div class="inc-top">
+          <span class="inc-id">#INC-2039</span>
+          <span class="inc-severity sev-moderate">MODERATE</span>
+          <span class="inc-time">24 min ago</span>
+        </div>
+        <div class="inc-location"><i class="fa-solid fa-location-dot"></i> Ring Road Junction — Rear-end crash</div>
+        <div class="inc-units">
+          <span class="unit-tag tag-ambulance">🚑 A05</span>
+        </div>
+        <div class="inc-bar-bg"><div class="inc-bar-fill" style="width:40%"></div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CENTER — Zone Map -->
+  <div class="dash-col dash-col-center">
+    <div class="dash-panel-title">
+      <i class="fa-solid fa-map-location-dot"></i> ACTIVE ZONE MAP
+    </div>
+    <div class="zone-map">
+      <div class="zone-grid"></div>
+
+      <!-- Zone blobs -->
+      <div class="zone-blob zone-red" style="top:30%;left:42%"></div>
+      <div class="zone-blob zone-orange" style="top:55%;left:20%"></div>
+      <div class="zone-blob zone-cyan" style="top:20%;left:65%"></div>
+
+      <!-- Road lines -->
+      <div class="zone-road road-h"></div>
+      <div class="zone-road road-v"></div>
+      <div class="zone-road road-d1"></div>
+
+      <!-- Incident Pins -->
+      <div class="zone-pin pin-critical" style="top:28%;left:40%">
+        <div class="pin-pulse"></div>
+        <div class="pin-dot">💥</div>
+        <div class="pin-label">#2041</div>
+      </div>
+      <div class="zone-pin pin-severe" style="top:52%;left:18%">
+        <div class="pin-pulse"></div>
+        <div class="pin-dot">⚠️</div>
+        <div class="pin-label">#2040</div>
+      </div>
+      <div class="zone-pin pin-moderate" style="top:18%;left:63%">
+        <div class="pin-pulse"></div>
+        <div class="pin-dot">🔶</div>
+        <div class="pin-label">#2039</div>
+      </div>
+
+      <!-- Unit Markers -->
+      <div class="zone-unit" style="top:35%;left:55%">🚑</div>
+      <div class="zone-unit" style="top:22%;left:35%">🚔</div>
+      <div class="zone-unit" style="top:60%;left:30%">🚒</div>
+      <div class="zone-unit" style="top:45%;left:70%">🚑</div>
+
+      <div class="zone-legend">
+        <span><span class="leg-dot leg-critical"></span> Critical</span>
+        <span><span class="leg-dot leg-severe"></span> Severe</span>
+        <span><span class="leg-dot leg-moderate"></span> Moderate</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT — Unit Status -->
+  <div class="dash-col">
+    <div class="dash-panel-title">
+      <i class="fa-solid fa-satellite-dish"></i> UNIT STATUS
+    </div>
+    <div class="unit-list">
+
+      <div class="unit-card">
+        <span class="unit-emoji">🚑</span>
+        <div class="unit-info">
+          <span class="unit-name">Ambulance A12</span>
+          <span class="unit-loc">MG Road → City General</span>
+        </div>
+        <span class="unit-status status-dispatched">EN ROUTE</span>
+      </div>
+
+      <div class="unit-card">
+        <span class="unit-emoji">🚑</span>
+        <div class="unit-info">
+          <span class="unit-name">Ambulance A08</span>
+          <span class="unit-loc">NH-48 Bypass</span>
+        </div>
+        <span class="unit-status status-dispatched">EN ROUTE</span>
+      </div>
+
+      <div class="unit-card">
+        <span class="unit-emoji">🚑</span>
+        <div class="unit-info">
+          <span class="unit-name">Ambulance A05</span>
+          <span class="unit-loc">Ring Road Junction</span>
+        </div>
+        <span class="unit-status status-onscene">ON SCENE</span>
+      </div>
+
+      <div class="unit-card">
+        <span class="unit-emoji">🚔</span>
+        <div class="unit-info">
+          <span class="unit-name">Police Unit P07</span>
+          <span class="unit-loc">MG Road, Sector 4</span>
+        </div>
+        <span class="unit-status status-onscene">ON SCENE</span>
+      </div>
+
+      <div class="unit-card">
+        <span class="unit-emoji">🚔</span>
+        <div class="unit-info">
+          <span class="unit-name">Police Unit P02</span>
+          <span class="unit-loc">NH-48 → Incident</span>
+        </div>
+        <span class="unit-status status-dispatched">EN ROUTE</span>
+      </div>
+
+      <div class="unit-card">
+        <span class="unit-emoji">🚒</span>
+        <div class="unit-info">
+          <span class="unit-name">Fire Unit F03</span>
+          <span class="unit-loc">MG Road, Sector 4</span>
+        </div>
+        <span class="unit-status status-onscene">ON SCENE</span>
+      </div>
+
+      <div class="unit-card">
+        <span class="unit-emoji">🚑</span>
+        <div class="unit-info">
+          <span class="unit-name">Ambulance A03</span>
+          <span class="unit-loc">Base Station</span>
+        </div>
+        <span class="unit-status status-standby">STANDBY</span>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Recent Incidents Table -->
+<div class="recent-table-wrap">
+  <div class="dash-panel-title">
+    <i class="fa-solid fa-table-list"></i> RECENT INCIDENTS LOG
+  </div>
+  <table class="recent-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Time</th>
+        <th>Location</th>
+        <th>Type</th>
+        <th>Severity</th>
+        <th>Response</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="td-id">#INC-2041</td>
+        <td>13:24</td>
+        <td>MG Road, Sector 4</td>
+        <td>Head-on Collision</td>
+        <td><span class="inc-severity sev-critical">CRITICAL</span></td>
+        <td>2 min 18s</td>
+        <td><span class="td-status status-active">ACTIVE</span></td>
+      </tr>
+      <tr>
+        <td class="td-id">#INC-2040</td>
+        <td>13:13</td>
+        <td>NH-48 Bypass</td>
+        <td>Vehicle Rollover</td>
+        <td><span class="inc-severity sev-severe">SEVERE</span></td>
+        <td>3 min 05s</td>
+        <td><span class="td-status status-active">ACTIVE</span></td>
+      </tr>
+      <tr>
+        <td class="td-id">#INC-2039</td>
+        <td>13:00</td>
+        <td>Ring Road Junction</td>
+        <td>Rear-end Crash</td>
+        <td><span class="inc-severity sev-moderate">MODERATE</span></td>
+        <td>4 min 52s</td>
+        <td><span class="td-status status-active">ACTIVE</span></td>
+      </tr>
+      <tr>
+        <td class="td-id">#INC-2038</td>
+        <td>12:41</td>
+        <td>Outer Ring Road</td>
+        <td>Side Collision</td>
+        <td><span class="inc-severity sev-severe">SEVERE</span></td>
+        <td>3 min 40s</td>
+        <td><span class="td-status status-resolved">RESOLVED</span></td>
+      </tr>
+      <tr>
+        <td class="td-id">#INC-2037</td>
+        <td>12:18</td>
+        <td>City Centre Flyover</td>
+        <td>Multi-vehicle Pile-up</td>
+        <td><span class="inc-severity sev-critical">CRITICAL</span></td>
+        <td>1 min 55s</td>
+        <td><span class="td-status status-resolved">RESOLVED</span></td>
+      </tr>
+      <tr>
+        <td class="td-id">#INC-2036</td>
+        <td>11:55</td>
+        <td>Industrial Zone Gate</td>
+        <td>Pedestrian Impact</td>
+        <td><span class="inc-severity sev-moderate">MODERATE</span></td>
+        <td>5 min 10s</td>
+        <td><span class="td-status status-resolved">RESOLVED</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+  <div class="section-header">
+  <p class="section-label">// INSIGHTS & DATA</p>
+  <h2 class="section-title">SYSTEM <span class="highlight-red">ANALYTICS</span></h2>
+  <p class="section-desc">Patterns, performance metrics, and incident intelligence.</p>
+</div>
+
+<div class="analytics-grid">
+
+  <!-- Response Time Chart -->
+  <div class="analytics-card card-wide">
+    <div class="dash-panel-title">
+      <i class="fa-solid fa-chart-line"></i> RESPONSE TIME — LAST 7 DAYS
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-y-labels">
+        <span>8m</span><span>6m</span><span>4m</span><span>2m</span><span>0</span>
+      </div>
+      <div class="bar-chart" id="responseChart">
+        <div class="bar-group">
+          <div class="bar-fill bar-cyan" style="height:52%"><span class="bar-tip">4.2m</span></div>
+          <span class="bar-label">Mon</span>
+        </div>
+        <div class="bar-group">
+          <div class="bar-fill bar-cyan" style="height:65%"><span class="bar-tip">5.2m</span></div>
+          <span class="bar-label">Tue</span>
+        </div>
+        <div class="bar-group">
+          <div class="bar-fill bar-cyan" style="height:44%"><span class="bar-tip">3.5m</span></div>
+          <span class="bar-label">Wed</span>
+        </div>
+        <div class="bar-group">
+          <div class="bar-fill bar-red" style="height:78%"><span class="bar-tip">6.2m</span></div>
+          <span class="bar-label">Thu</span>
+        </div>
+        <div class="bar-group">
+          <div class="bar-fill bar-cyan" style="height:50%"><span class="bar-tip">4.0m</span></div>
+          <span class="bar-label">Fri</span>
+        </div>
+        <div class="bar-group">
+          <div class="bar-fill bar-orange" style="height:60%"><span class="bar-tip">4.8m</span></div>
+          <span class="bar-label">Sat</span>
+        </div>
+        <div class="bar-group">
+          <div class="bar-fill bar-cyan" style="height:40%"><span class="bar-tip">3.2m</span></div>
+          <span class="bar-label">Sun</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Severity Breakdown -->
+  <div class="analytics-card">
+    <div class="dash-panel-title">
+      <i class="fa-solid fa-chart-pie"></i> SEVERITY BREAKDOWN
+    </div>
+    <div class="donut-wrap">
+      <svg viewBox="0 0 120 120" class="donut-svg">
+        <!-- Critical 35% -->
+        <circle class="donut-ring" cx="60" cy="60" r="45" fill="none" stroke="#ff1e3c"
+          stroke-width="18" stroke-dasharray="99 283" stroke-dashoffset="0"/>
+        <!-- Severe 28% -->
+        <circle class="donut-ring" cx="60" cy="60" r="45" fill="none" stroke="#ff6b00"
+          stroke-width="18" stroke-dasharray="79 283" stroke-dashoffset="-99"/>
+        <!-- Moderate 22% -->
+        <circle class="donut-ring" cx="60" cy="60" r="45" fill="none" stroke="#00e5ff"
+          stroke-width="18" stroke-dasharray="62 283" stroke-dashoffset="-178"/>
+        <!-- Minor 15% -->
+        <circle class="donut-ring" cx="60" cy="60" r="45" fill="none" stroke="#00ff64"
+          stroke-width="18" stroke-dasharray="42 283" stroke-dashoffset="-240"/>
+        <text x="60" y="55" text-anchor="middle" fill="white" font-size="10" font-family="Orbitron">247</text>
+        <text x="60" y="68" text-anchor="middle" fill="#8899aa" font-size="5.5" font-family="Exo 2">TOTAL</text>
+      </svg>
+      <div class="donut-legend">
+        <div class="donut-leg-item"><span class="leg-color" style="background:#ff1e3c"></span> Critical <strong>35%</strong></div>
+        <div class="donut-leg-item"><span class="leg-color" style="background:#ff6b00"></span> Severe <strong>28%</strong></div>
+        <div class="donut-leg-item"><span class="leg-color" style="background:#00e5ff"></span> Moderate <strong>22%</strong></div>
+        <div class="donut-leg-item"><span class="leg-color" style="background:#00ff64"></span> Minor <strong>15%</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hotspot Heatmap -->
+  <div class="analytics-card card-wide">
+    <div class="dash-panel-title">
+      <i class="fa-solid fa-fire"></i> ACCIDENT HOTSPOT HEATMAP
+    </div>
+    <div class="heatmap-wrap">
+      <div class="heatmap-grid">
+        <div class="hm-zone-grid"></div>
+        <div class="hm-road hm-road-h"></div>
+        <div class="hm-road hm-road-v"></div>
+        <div class="hm-road hm-road-d"></div>
+
+        <!-- Heat blobs -->
+        <div class="heat-blob heat-xl" style="top:35%;left:40%;background:radial-gradient(circle,rgba(255,30,60,0.7),transparent 70%)"></div>
+        <div class="heat-blob heat-lg" style="top:55%;left:18%;background:radial-gradient(circle,rgba(255,107,0,0.6),transparent 70%)"></div>
+        <div class="heat-blob heat-lg" style="top:20%;left:65%;background:radial-gradient(circle,rgba(255,107,0,0.5),transparent 70%)"></div>
+        <div class="heat-blob heat-md" style="top:70%;left:55%;background:radial-gradient(circle,rgba(255,204,0,0.5),transparent 70%)"></div>
+        <div class="heat-blob heat-md" style="top:15%;left:25%;background:radial-gradient(circle,rgba(255,204,0,0.4),transparent 70%)"></div>
+        <div class="heat-blob heat-sm" style="top:80%;left:75%;background:radial-gradient(circle,rgba(0,229,255,0.3),transparent 70%)"></div>
+        <div class="heat-blob heat-sm" style="top:45%;left:78%;background:radial-gradient(circle,rgba(0,229,255,0.3),transparent 70%)"></div>
+
+        <!-- Location Labels -->
+        <div class="hm-label" style="top:33%;left:38%">MG Road</div>
+        <div class="hm-label" style="top:53%;left:16%">NH-48</div>
+        <div class="hm-label" style="top:18%;left:63%">Ring Road</div>
+
+        <div class="heatmap-legend">
+          <span class="hm-leg-label">Low</span>
+          <div class="hm-gradient-bar"></div>
+          <span class="hm-leg-label">High</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monthly Stats -->
+  <div class="analytics-card">
+    <div class="dash-panel-title">
+      <i class="fa-solid fa-calendar-days"></i> MONTHLY STATS
+    </div>
+    <div class="monthly-stats">
+      <div class="month-row">
+        <span class="month-name">January</span>
+        <div class="month-bar-bg">
+          <div class="month-bar-fill" style="width:72%;background:var(--accent-cyan)"></div>
+        </div>
+        <span class="month-count">187</span>
+      </div>
+      <div class="month-row">
+        <span class="month-name">February</span>
+        <div class="month-bar-bg">
+          <div class="month-bar-fill" style="width:61%;background:var(--accent-cyan)"></div>
+        </div>
+        <span class="month-count">159</span>
+      </div>
+      <div class="month-row">
+        <span class="month-name">March</span>
+        <div class="month-bar-bg">
+          <div class="month-bar-fill" style="width:88%;background:var(--accent-red)"></div>
+        </div>
+        <span class="month-count">229</span>
+      </div>
+      <div class="month-row">
+        <span class="month-name">April</span>
+        <div class="month-bar-bg">
+          <div class="month-bar-fill" style="width:55%;background:var(--accent-cyan)"></div>
+        </div>
+        <span class="month-count">143</span>
+      </div>
+      <div class="month-row">
+        <span class="month-name">May</span>
+        <div class="month-bar-bg">
+          <div class="month-bar-fill" style="width:78%;background:var(--accent-orange)"></div>
+        </div>
+        <span class="month-count">203</span>
+      </div>
+      <div class="month-row">
+        <span class="month-name">June</span>
+        <div class="month-bar-bg">
+          <div class="month-bar-fill" style="width:66%;background:var(--accent-cyan)"></div>
+        </div>
+        <span class="month-count">172</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+  <script src="script.js"></script>
+</body>
+</html>
